@@ -4,18 +4,17 @@ authors = [
 ]
 dependencies = [
   "numpy>=1.20.0",
-  "pytest-cov>=4.0.0",
   "matplotlib>=3.5.0",
   "toppra==0.6.3",
 ]
-description = "Add your description here"
+description = "Retiming of UR30 joint-space trajectories under Cartesian speed, joint velocity and joint acceleration limits"
 name = "trajectory_retiming"
 readme = "README.md"
 requires-python = ">=3.14"
 version = "0.1.0"
 
 [project.scripts]
-trajectory_retiming = "robotics_challenge_take_home:main"
+trajectory-retiming = "trajectory_retiming.retimer:main"
 
 [build-system]
 build-backend = "uv_build"
@@ -23,8 +22,9 @@ requires = ["uv_build>=0.12.5,<0.13.0"]
 
 [dependency-groups]
 dev = [
-  "ipython==8.0.0",
+  "ipython>=8.0.0",
   "pytest>=7.0.0",
+  "pytest-cov>=4.0.0",
 ]
 
 [tool.pytest.ini_options]

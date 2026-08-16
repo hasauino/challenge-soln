@@ -730,7 +730,6 @@ source = { editable = "." }
 dependencies = [
     { name = "matplotlib" },
     { name = "numpy" },
-    { name = "pytest-cov" },
     { name = "toppra" },
 ]
 
@@ -738,20 +737,21 @@ dependencies = [
 dev = [
     { name = "ipython" },
     { name = "pytest" },
+    { name = "pytest-cov" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "matplotlib", specifier = ">=3.5.0" },
     { name = "numpy", specifier = ">=1.20.0" },
-    { name = "pytest-cov", specifier = ">=4.0.0" },
     { name = "toppra", specifier = "==0.6.3" },
 ]
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "ipython", specifier = "==8.0.0" },
+    { name = "ipython", specifier = ">=8.0.0" },
     { name = "pytest", specifier = ">=7.0.0" },
+    { name = "pytest-cov", specifier = ">=4.0.0" },
 ]
 
 [[package]]

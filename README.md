@@ -4,6 +4,42 @@ Thank you for taking the time to complete this challenge. Please read the instru
 
 ---
 
+## Solution
+
+The solution uses [uv](https://docs.astral.sh/uv/).
+
+```bash
+# Optional: pre-install dependencies (uv run does this automatically otherwise)
+uv sync
+```
+
+### Run the tests
+
+```bash
+uv run pytest
+
+# with a coverage report
+uv run pytest --cov=trajectory_retiming
+```
+
+### Run the retimer / visualizer
+
+The package installs the built-in visualizer as a console script, so the same entry point is available as:
+
+```bash
+uv run trajectory-retiming
+```
+
+Use `--retime` to show the retiming applied:
+
+```bash
+uv run trajectory-retiming --retime
+```
+
+
+
+---
+
 ## Scenario
 
 A construction robot performs surface treatment (e.g., concrete removal, coating application) on building elements. Its joint-space trajectory has been optimized for minimal total execution time — but the resulting Cartesian end-effector speed exceeds the tool's maximum allowable velocity.
