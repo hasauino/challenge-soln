@@ -474,7 +474,9 @@ def retime_trajectory(
     return trajectory_copy
 
 
-def plot_trajectory(trajectory: JointTrajectory) -> None:
+def plot_trajectory(
+    trajectory: JointTrajectory, title: str | None = None, show: bool = True
+) -> None:
     """
     Plot a trajectory object.
 
@@ -486,6 +488,10 @@ def plot_trajectory(trajectory: JointTrajectory) -> None:
 
     Args:
         trajectory: JointTrajectory object (e.g. from retime_trajectory)
+        title: Optional heading for the figure, used to tell several figures
+            apart
+        show: Whether to display the figure. Pass False to build up several
+            figures and show them together with a single `plt.show()`.
     """
     import matplotlib.pyplot as plt
     from mpl_toolkits.mplot3d import Axes3D
@@ -598,8 +604,22 @@ def plot_trajectory(trajectory: JointTrajectory) -> None:
     ax4.set_title('Cartesian End-Effector Path', fontsize=13, fontweight='bold')
     ax4.legend(loc='upper left', fontsize=9)
 
-    plt.tight_layout()
-    plt.show()
+    if title:
+        fig.suptitle(title, fontsize=15, fontweight='bold')
+    plt.tight_layout(rect=(0, 0, 1, 0.97) if title else None)
+    if show:
+        plt.show()
+
+
+def _describe(label: str, trajectory: JointTrajectory, limits: RobotLimits) -> str:
+    """One-line summary of a trajectory's duration and limit usage."""
+    usage = compute_limit_usage(trajectory, limits)
+    return (
+        f"{label}: {usage['duration']:.3f} s"
+        f"  |  joint velocity {usage['joint_velocity']:.0%}"
+        f", joint acceleration {usage['joint_acceleration']:.0%}"
+        f", Cartesian speed {usage['cartesian_speed']:.0%} of limit"
+    )
 
 
 def main():
@@ -607,22 +627,44 @@ def main():
     import argparse
     import os
 
+    import matplotlib.pyplot as plt
+
     parser = argparse.ArgumentParser(
         description='Plot robot trajectory from JSON file'
     )
     parser.add_argument(
         '--trajectory', '-t',
         type=str,
+        # The package lives in src/, so the repo root is two levels up.
         default=os.path.join(
-            os.path.dirname(__file__), '..', 'examples', 'p2p_trajectory.json'
+            os.path.dirname(__file__), '..', '..', 'examples', 'p2p_trajectory.json'
         ),
         help='Path to trajectory JSON file'
+    )
+    parser.add_argument(
+        '--retime', '-r',
+        action='store_true',
+        help='Retime the trajectory and plot it side by side with the original'
     )
     args = parser.parse_args()
 
     print(f"Loading trajectory from: {args.trajectory}")
     trajectory = load_joint_trajectory_from_json(args.trajectory)
-    plot_trajectory(trajectory)
+
+    if not args.retime:
+        plot_trajectory(trajectory)
+        return
+
+    limits = RobotLimits()
+    retimed = retime_trajectory(trajectory, limits)
+    print(_describe("Original", trajectory, limits))
+    print(_describe("Retimed ", retimed, limits))
+
+    # Both figures are built first and shown together, so that the before and
+    # after can be compared without closing one to reach the other.
+    plot_trajectory(trajectory, title='Before retiming', show=False)
+    plot_trajectory(retimed, title='After retiming', show=False)
+    plt.show()
 
 
 if __name__ == "__main__":
